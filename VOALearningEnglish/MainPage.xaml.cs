@@ -21,7 +21,7 @@ namespace VOALearningEnglish
         // sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
         private HttpClient httpClient;
         private HttpResponseMessage response;
-
+        private const string VOA = "http://www.51voa.com/voa.xml";
         private const string SP = "http://www.51voa.com/sp.xml";
         private const string ST = "http://www.51voa.com/st.xml";
         private const string EN = "http://www.51voa.com/en.xml";
@@ -164,6 +164,13 @@ namespace VOALearningEnglish
                 throw new Exception("Navigation failed.");
             }
 
+        }
+
+        private async void voa_Click(object sender, RoutedEventArgs e)
+        {
+            feedAddress = VOA;
+            pagetitleName.Text = voa.Label;
+            await LoadResource();
         }
 
         private async void sp_Click(object sender, RoutedEventArgs e)
