@@ -122,7 +122,7 @@ namespace VOALearningEnglish.Common
         }
 
 
-        public static async Task DeleteFilesFromMusicLibraryAsync(string folderName, int days = 30)
+        public static async Task DeleteFilesFromMusicLibraryAsync(string folderName, int days = 15)
         {
             var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;// Windows.Storage.KnownFolders.MusicLibrary;
 

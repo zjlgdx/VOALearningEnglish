@@ -22,10 +22,11 @@ namespace VOALearningEnglish
         private HttpClient httpClient;
         private HttpResponseMessage response;
 
-        private const string sp = "http://www.51voa.com/sp.xml";
-        private const string st = "http://www.51voa.com/st.xml";
+        private const string SP = "http://www.51voa.com/sp.xml";
+        private const string ST = "http://www.51voa.com/st.xml";
+        private const string EN = "http://www.51voa.com/en.xml";
         // This is the feed address that will be parsed and displayed
-        private String feedAddress = sp;//"http://www.51voa.com/sp.xml";
+        private String feedAddress = EN;//"http://www.51voa.com/sp.xml";
         //http://www.51voa.com/st.xml
 
         public MainPage()
@@ -165,24 +166,26 @@ namespace VOALearningEnglish
 
         }
 
-        
-
-        private async void switch_Click(object sender, RoutedEventArgs e)
+        private async void sp_Click(object sender, RoutedEventArgs e)
         {
-            if (switchAudio.Label == "慢速")
-            {
-                switchAudio.Label = "标准";
-                feedAddress = st;
-                pagetitleName.Text = "VOA Standard English";
-            }
-            else
-            {
-                switchAudio.Label = "慢速";
-                feedAddress = sp;
-                pagetitleName.Text = "VOA Learning English";
-            }
-
+            feedAddress = SP;
+            pagetitleName.Text = sp.Label;
             await LoadResource();
         }
+
+        private async void st_Click(object sender, RoutedEventArgs e)
+        {
+            feedAddress = ST;
+            pagetitleName.Text = st.Label;
+            await LoadResource();
+        }
+
+        private async void en_Click(object sender, RoutedEventArgs e)
+        {
+            feedAddress = EN;
+            pagetitleName.Text = en.Label;
+            await LoadResource();
+        }
+
     }
 }
