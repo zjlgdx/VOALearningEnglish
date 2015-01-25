@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="78402ea4-de16-4a01-883b-8ca00d572a20" Publisher="CN=Yibang" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="78402ea4-de16-4a01-883b-8ca00d572a20" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="37940YvanYang.51VOALearningEnglish" Publisher="CN=4BE00AF2-1094-41E9-BDE4-AF3F522A812E" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="035caab0-bc19-40ba-b832-8a1c4be48130" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>VOALearningEnglish</DisplayName>
-    <PublisherDisplayName>Yibang</PublisherDisplayName>
+    <DisplayName>51VOA Learning English</DisplayName>
+    <PublisherDisplayName>Yvan Yang</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -16,7 +16,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="VOALearningEnglish.App">
-      <m3:VisualElements DisplayName="VOALearningEnglish" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="VOALearningEnglish" ForegroundText="light" BackgroundColor="transparent">
+      <m3:VisualElements DisplayName="51VOA Learning English" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="VOALearningEnglish" ForegroundText="light" BackgroundColor="transparent">
         <m3:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png">
         </m3:DefaultTile>
         <m3:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#08d7b5" />
