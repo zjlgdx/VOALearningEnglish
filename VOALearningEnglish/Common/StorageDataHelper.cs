@@ -57,7 +57,7 @@ namespace VOALearningEnglish.Common
             {
                 Debug.WriteLine("save File error");
             }
-            
+
 
 
         }
@@ -85,6 +85,10 @@ namespace VOALearningEnglish.Common
 
         public static async Task<string> DownloadAudioFileToMusicLibraryAsync(string downloadUriString, string filename)
         {
+            try
+            {
+
+            
             var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;// Windows.Storage.KnownFolders.MusicLibrary;
 
             Uri downLoadingUri = new Uri(downloadUriString);
@@ -101,29 +105,20 @@ namespace VOALearningEnglish.Common
 
                 return file.Path;
             }
+            }
+            catch 
+            {
+
+                return string.Empty;
+            }
         }
 
         public static async Task DeleteAudioFileToMusicLibraryAsync(string filename, string folderName)
         {
-            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;// Windows.Storage.KnownFolders.MusicLibrary;
+            try
+            {
 
-         //   Uri downLoadingUri = new Uri(downloadUriString);
-          //  HttpClient client = new HttpClient();
-        //    using (var response = await client.GetAsync(downLoadingUri))
-           // {
-                //http://msdn.microsoft.com/en-us/library/windows/apps/xaml/Hh758325(v=win.10).aspx
-                // Quickstart: Reading and writing files (XAML)\
-          //      var buffer = await response.Content.ReadAsBufferAsync();
-                var folder = await localFolder.GetFolderAsync(BASE_FOLDER_NAME);
-                StorageFolder subfolder = await folder.GetFolderAsync(folderName);
-                StorageFile file = await subfolder.GetFileAsync(filename);
-                await  file.DeleteAsync();
             
-        }
-
-
-        public static async Task DeleteFilesFromMusicLibraryAsync(string folderName, int days = 15)
-        {
             var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;// Windows.Storage.KnownFolders.MusicLibrary;
 
             //   Uri downLoadingUri = new Uri(downloadUriString);
@@ -135,15 +130,52 @@ namespace VOALearningEnglish.Common
             //      var buffer = await response.Content.ReadAsBufferAsync();
             var folder = await localFolder.GetFolderAsync(BASE_FOLDER_NAME);
             StorageFolder subfolder = await folder.GetFolderAsync(folderName);
-            var files = await subfolder.GetFilesAsync();
-            foreach (var file in files)
+            StorageFile file = await subfolder.GetFileAsync(filename);
+            await file.DeleteAsync();
+            }
+            catch 
             {
-                var dto = file.DateCreated;
-                DateTimeOffset currentDto = DateTimeOffset.Now;
-                var diff = currentDto - dto;
-                if (diff.Days > days) {
-                   await file.DeleteAsync();
+
+               
+            }
+
+        }
+
+
+        public static async Task DeleteFilesFromMusicLibraryAsync(string folderName, int days = 15)
+        {
+            try
+            {
+
+
+                var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;// Windows.Storage.KnownFolders.MusicLibrary;
+
+                //   Uri downLoadingUri = new Uri(downloadUriString);
+                //  HttpClient client = new HttpClient();
+                //    using (var response = await client.GetAsync(downLoadingUri))
+                // {
+                //http://msdn.microsoft.com/en-us/library/windows/apps/xaml/Hh758325(v=win.10).aspx
+                // Quickstart: Reading and writing files (XAML)\
+                //      var buffer = await response.Content.ReadAsBufferAsync();
+                var folder = await localFolder.GetFolderAsync(BASE_FOLDER_NAME);
+                StorageFolder subfolder = await folder.GetFolderAsync(folderName);
+                var files = await subfolder.GetFilesAsync();
+                foreach (var file in files)
+                {
+                    var dto = file.DateCreated;
+                    DateTimeOffset currentDto = DateTimeOffset.Now;
+                    var diff = currentDto - dto;
+                    if (diff.Days > days)
+                    {
+                        await file.DeleteAsync();
+                    }
                 }
+
+            }
+            catch
+            {
+
+
             }
 
         }
