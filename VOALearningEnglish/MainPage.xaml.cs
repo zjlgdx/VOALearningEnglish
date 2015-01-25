@@ -7,6 +7,8 @@ using VOALearningEnglish.Models;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using System.Linq;
+using Windows.UI.Popups;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -61,85 +63,119 @@ namespace VOALearningEnglish
             // Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
             // If you are using the NavigationHelper provided by some templates,
             // this event is handled for you.
+           
             await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("audio");
             await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("Json");
-            await LoadResource();
+            try
+            {
+                await LoadResource();
+            }
+            catch
+            {
+              
+            }
+            
         }
 
         private async void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            await LoadResource();
+            var failed = false;
+            try
+            {
+                await LoadResource(true);
+            }
+            catch
+            {
+                failed = true;
+
+            }
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常", "网络连接");
+                await md2.ShowAsync();
+            }
 
         }
 
-        private async System.Threading.Tasks.Task LoadResource()
+        private async System.Threading.Tasks.Task LoadResource(bool sync = false)
         {
-            response = new HttpResponseMessage();
-
-            // if 'feedAddress' value changed the new URI must be tested --------------------------------
-            // if the new 'feedAddress' doesn't work, 'feedStatus' informs the user about the incorrect input.
-
-            feedStatus.Text = "Test if URI is valid";
-
-            Uri resourceUri;
-            if (!Uri.TryCreate(feedAddress.Trim(), UriKind.Absolute, out resourceUri))
+            var lstData = new List<RssItem>();
+            var fileName = feedAddress.Split('/').Last().Replace(".xml", ".json");
+            if (sync)
             {
-                feedStatus.Text = "Invalid URI, please re-enter a valid URI";
-                return;
+                response = new HttpResponseMessage();
+
+                // if 'feedAddress' value changed the new URI must be tested --------------------------------
+                // if the new 'feedAddress' doesn't work, 'feedStatus' informs the user about the incorrect input.
+
+                feedStatus.Text = "Test if URI is valid";
+
+                Uri resourceUri;
+                if (!Uri.TryCreate(feedAddress.Trim(), UriKind.Absolute, out resourceUri))
+                {
+                    feedStatus.Text = "Invalid URI, please re-enter a valid URI";
+                    return;
+                }
+                if (resourceUri.Scheme != "http" && resourceUri.Scheme != "https")
+                {
+                    feedStatus.Text = "Only 'http' and 'https' schemes supported. Please re-enter URI";
+                    return;
+                }
+                // ---------- end of test---------------------------------------------------------------------
+
+                string responseText;
+                feedStatus.Text = "Waiting for response ...";
+
+                try
+                {
+                    response = await httpClient.GetAsync(resourceUri);
+
+                    response.EnsureSuccessStatusCode();
+
+                    responseText = await response.Content.ReadAsStringAsync();
+                    statusPanel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
+                }
+                catch (Exception ex)
+                {
+                    // Need to convert int HResult to hex string
+                    feedStatus.Text = "Error = " + ex.HResult.ToString("X") +
+                        "  Message: " + ex.Message;
+                    responseText = "";
+                }
+                feedStatus.Text = response.StatusCode + " " + response.ReasonPhrase;
+
+                // now 'responseText' contains the feed as a verified text.
+                // next 'responseText' is converted as the rssItems class model definition to be displayed as a list
+
+
+                XElement _xml = XElement.Parse(responseText);
+                foreach (XElement value in _xml.Elements("channel").Elements("item"))
+                {
+                    RssItem _item = new RssItem();
+
+                    _item.Title = value.Element("title").Value;
+
+                    _item.Description = value.Element("description").Value;
+
+                    _item.Link = value.Element("link").Value;
+
+                    _item.PubDate = value.Element("pubDate").Value;
+
+                    lstData.Add(_item);
+                }
+
+                await StorageDataHelper.SaveJsonFileToDocumentsLibraryAsync<List<RssItem>>(fileName, lstData);
             }
-            if (resourceUri.Scheme != "http" && resourceUri.Scheme != "https")
+            else
             {
-                feedStatus.Text = "Only 'http' and 'https' schemes supported. Please re-enter URI";
-                return;
-            }
-            // ---------- end of test---------------------------------------------------------------------
 
-            string responseText;
-            feedStatus.Text = "Waiting for response ...";
-
-            try
-            {
-                response = await httpClient.GetAsync(resourceUri);
-
-                response.EnsureSuccessStatusCode();
-
-                responseText = await response.Content.ReadAsStringAsync();
-                statusPanel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-
-            }
-            catch (Exception ex)
-            {
-                // Need to convert int HResult to hex string
-                feedStatus.Text = "Error = " + ex.HResult.ToString("X") +
-                    "  Message: " + ex.Message;
-                responseText = "";
-            }
-            feedStatus.Text = response.StatusCode + " " + response.ReasonPhrase;
-
-            // now 'responseText' contains the feed as a verified text.
-            // next 'responseText' is converted as the rssItems class model definition to be displayed as a list
-
-            List<RssItem> lstData = new List<RssItem>();
-            XElement _xml = XElement.Parse(responseText);
-            foreach (XElement value in _xml.Elements("channel").Elements("item"))
-            {
-                RssItem _item = new RssItem();
-
-                _item.Title = value.Element("title").Value;
-
-                _item.Description = value.Element("description").Value;
-
-                _item.Link = value.Element("link").Value;
-
-                _item.PubDate = value.Element("pubDate").Value;
-
-                lstData.Add(_item);
-
-
+                lstData = await StorageDataHelper.GetJsonFromLocalAsync<List<RssItem>>(fileName);
             }
 
             // lstRSS is bound to the lstData: the final result of the RSS parsing
             lstRSS.DataContext = lstData;
+
         }
 
         private void lstRSS_SelectionChanged(object sender, SelectionChangedEventArgs e)

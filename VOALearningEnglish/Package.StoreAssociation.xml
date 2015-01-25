@@ -194,5 +194,11 @@
     <MainPackageIdentityName>37940YvanYang.NCE</MainPackageIdentityName>
     <MainPackageIdentityName>37940YvanYang.46607ABF21476</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=b732efde-54f3-4c42-a9aa-f0aa00c30aa9" />
+  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=b732efde-54f3-4c42-a9aa-f0aa00c30aa9">
+    <PackageInfo>
+      <OsMinVersion>6.3.0.0</OsMinVersion>
+      <PackageArchitecture>neutral</PackageArchitecture>
+      <PackageMaxArchitectureVersion>1.1.0.0</PackageMaxArchitectureVersion>
+    </PackageInfo>
+  </PackageInfoList>
 </StoreAssociation>

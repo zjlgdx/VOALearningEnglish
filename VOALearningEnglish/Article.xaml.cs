@@ -328,7 +328,7 @@ namespace VOALearningEnglish
                 DownloadAppBarButton.Icon = Helper.SetIcon(obj.DownloadIconLable);// = Helper.SetIcon("Delete");
                 //var articleFileName = link.Split('/').Last();
                 //articleFileName = Regex.Replace(filename, "\\.html$", ".json");
-                await StorageDataHelper.SaveJsonFileToDocumentsLibraryAsync(articleFileName, obj);
+                await StorageDataHelper.SaveJsonFileToDocumentsLibraryAsync<ArticleModel>(articleFileName, obj);
                 var localMp3file = await StorageDataHelper.DownloadAudioFileToMusicLibraryAsync(mp3url, mp3);
                 if (!string.IsNullOrEmpty(localMp3file))
                 {

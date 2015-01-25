@@ -12,7 +12,7 @@ namespace VOALearningEnglish.Common
     class StorageDataHelper
     {
         public const string BASE_FOLDER_NAME = "VOALearningEnglish";
-        public static async Task<ArticleModel> GetJsonFromLocalAsync(string filename)
+        public static async Task<T> GetJsonFromLocalAsync<T>(string filename) where T :class
         {
             try
             {
@@ -24,7 +24,7 @@ namespace VOALearningEnglish.Common
                 var file = await subfolder.GetFileAsync(filename);
                 string result = await FileIO.ReadTextAsync(file);
 
-                ArticleModel obj = JsonConvert.DeserializeObject<ArticleModel>(result);
+                T obj = JsonConvert.DeserializeObject<T>(result);
 
                 return obj;
             }
@@ -34,12 +34,10 @@ namespace VOALearningEnglish.Common
 
                 return null;
             }
-
-
         }
 
 
-        public async static Task SaveJsonFileToDocumentsLibraryAsync(string filename, ArticleModel obj)
+        public async static Task SaveJsonFileToDocumentsLibraryAsync<T>(string filename, T obj) where T : class
         {
             try
             {

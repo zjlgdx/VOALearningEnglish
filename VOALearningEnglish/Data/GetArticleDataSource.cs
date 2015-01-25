@@ -41,7 +41,7 @@ namespace VOALearningEnglish.Data
 
         public async Task GetJsonDataSource(string url, string fileName)
         {
-            var article = await StorageDataHelper.GetJsonFromLocalAsync(fileName);
+            var article = await StorageDataHelper.GetJsonFromLocalAsync<ArticleModel>(fileName);
 
             if (article == null)
             {
