@@ -22,8 +22,11 @@ namespace VOALearningEnglish
         private HttpClient httpClient;
         private HttpResponseMessage response;
 
+        private const string sp = "http://www.51voa.com/sp.xml";
+        private const string st = "http://www.51voa.com/st.xml";
         // This is the feed address that will be parsed and displayed
-        private String feedAddress = "http://www.51voa.com/sp.xml";
+        private String feedAddress = sp;//"http://www.51voa.com/sp.xml";
+        //http://www.51voa.com/st.xml
 
         public MainPage()
         {
@@ -160,6 +163,26 @@ namespace VOALearningEnglish
                 throw new Exception("Navigation failed.");
             }
 
+        }
+
+        
+
+        private async void switch_Click(object sender, RoutedEventArgs e)
+        {
+            if (switchAudio.Label == "慢速")
+            {
+                switchAudio.Label = "标准";
+                feedAddress = st;
+                pagetitleName.Text = "VOA Standard English";
+            }
+            else
+            {
+                switchAudio.Label = "慢速";
+                feedAddress = sp;
+                pagetitleName.Text = "VOA Learning English";
+            }
+
+            await LoadResource();
         }
     }
 }

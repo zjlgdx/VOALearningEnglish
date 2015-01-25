@@ -23,7 +23,7 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="VOA Learning English" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,12"/>
+            <TextBlock x:Name="pagetitleName" Text="VOA Learning English" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,12"/>
         </StackPanel>
         
         <ScrollViewer Grid.Row="1">
@@ -103,6 +103,8 @@
     <Page.BottomAppBar>
         <CommandBar Background="#FF2996AE">
             <AppBarButton Icon="Sync" Click="AppBarButton_Click" Label="Sync"/>
+            <AppBarButton x:Name="switchAudio" Label="慢速" Icon="Switch" Click="switch_Click" />
+
         </CommandBar>
     </Page.BottomAppBar>
 </Page>
