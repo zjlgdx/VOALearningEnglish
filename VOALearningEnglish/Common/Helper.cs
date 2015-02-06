@@ -33,6 +33,14 @@ namespace VOALearningEnglish.Common
         
             await statusBar.ProgressIndicator.HideAsync();
         }
+        public static string GetEnPage(string input)
+        {
+            //string test = "<a id="mp3" href="http://stream.51voa.com/201501/some-parts-of-asylum-seekers-story-on-abuse-in-north-korea-are-untrue.mp3" title="鼠标右键点击下载"></a>";
+
+            Regex reg = new Regex(@"(?is)<a(?:(?!href=).)*href=(['""]?)(?<url>[^""'\s>]*)\1[^>]*>(?<text>(?:(?!</a>).)*)</a>");
+            Match match = reg.Match(input);
+            return match.Result("${url}");
+        }
 
         public static string GetMp3(string input)
         {
@@ -58,7 +66,7 @@ namespace VOALearningEnglish.Common
         /// <returns></returns>
         public static IDictionary<string, string> GetContentById(string html)
         {
-            string[] idList = { "title", "mp3", "content" };
+            string[] idList = { "title", "mp3", "content", "EnPage" };
             string pattern = @"<([a-z]+)(?:(?!\bid\b)[^<>])*id=([""']?){0}\2[^>]*>(?><\1[^>]*>(?<o>)|</\1>(?<-o>)|(?:(?!</?\1).)*)*(?(o)(?!))</\1>";
             var result = new Dictionary<string, string>();
             foreach (string id in idList)

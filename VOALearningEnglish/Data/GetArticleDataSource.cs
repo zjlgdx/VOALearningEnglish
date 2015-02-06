@@ -58,7 +58,19 @@ namespace VOALearningEnglish.Data
                     obj.Title = Helper.GetTitle(contents["title"]);
                     obj.Audio = Helper.GetMp3(contents["mp3"]);
                     obj.Mp3url = obj.Audio;
-                    obj.Content = contents["content"];
+
+                    if (!string.IsNullOrEmpty(contents["EnPage"]))
+                    {
+                        var shuangyuUrl = Helper.GetEnPage(contents["EnPage"]);
+                        obj.Content = await GetEnPageContent(shuangyuUrl);
+                    }
+                    else
+                    {
+                        obj.Content = contents["content"];
+                    }
+                   
+ 
+                    
                     obj.DownloadIconLable = "Download";
                     //  obj.DownloadIcon = Helper.SetIcon("Download");
                     //  await StorageDataHelper.writeTextToSDCard(RootFolder, JsonLocalFileName, json);
@@ -73,6 +85,23 @@ namespace VOALearningEnglish.Data
 
 
 
+        }
+
+        private async Task<string> GetEnPageContent(string url) {
+            Uri dataUri = new Uri(url);
+            HttpClient client = new HttpClient();
+
+            using (var response = await client.GetAsync(dataUri))
+            {
+                response.EnsureSuccessStatusCode();
+                var responseText = await response.Content.ReadAsStringAsync();
+
+                var contents = Helper.GetContentById(html: responseText);
+             
+                return contents["content"];
+               
+       
+            }
         }
     }
 }
