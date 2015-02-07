@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using System.Linq;
 using Windows.UI.Popups;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -19,6 +20,7 @@ namespace VOALearningEnglish
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private NavigationHelper navigationHelper;
         //The Windows.Web.Http.HttpClient class provides the main class for 
         // sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
         private HttpClient httpClient;
@@ -37,6 +39,10 @@ namespace VOALearningEnglish
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
+            this.navigationHelper = new NavigationHelper(this);
+            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
+            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
             httpClient = new HttpClient();
 
             // Add a user-agent header
@@ -47,6 +53,27 @@ namespace VOALearningEnglish
 
             headers.UserAgent.ParseAdd("ie");
             headers.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
+        }
+
+        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
+        {
+            SaveSelectionChannel(feedAddress);
+        }
+
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        {
+            LoadSelectionChannel();
+
+            await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("audio");
+            await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("Json");
+            try
+            {
+                await LoadResource();
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
@@ -64,16 +91,7 @@ namespace VOALearningEnglish
             // If you are using the NavigationHelper provided by some templates,
             // this event is handled for you.
            
-            await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("audio");
-            await StorageDataHelper.DeleteFilesFromMusicLibraryAsync("Json");
-            try
-            {
-                await LoadResource();
-            }
-            catch
-            {
-              
-            }
+            
             
         }
 
@@ -228,6 +246,40 @@ namespace VOALearningEnglish
             feedAddress = EN;
             pagetitleName.Text = en.Label;
             await LoadResource();
+        }
+
+        private void SaveSelectionChannel(string value)
+        {
+            var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var key = "DefaultChannel";
+            if (settings.Values.ContainsKey(key))
+            {
+                // If the value has changed
+                if (settings.Values[key] != value)
+                {
+                    // Store the new value
+                    settings.Values[key] = value;
+                    //valueChanged = true;
+                }
+            }
+            // Otherwise create the key.
+            else
+            {
+                settings.Values.Add(key, value);
+               // valueChanged = true;
+            }
+        }
+
+        private void LoadSelectionChannel()
+        {
+            var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var key = "DefaultChannel";
+            if (settings.Values.ContainsKey(key))
+            {
+                feedAddress = settings.Values[key].ToString();
+            }
+
+           
         }
 
     }

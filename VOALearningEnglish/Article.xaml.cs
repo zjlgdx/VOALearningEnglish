@@ -123,7 +123,15 @@ namespace VOALearningEnglish
                 //}
                 //this.DefaultViewModel["MP3"] = obj.Audio;
                 article.NavigateToString(obj.Content);
-
+                if (string.IsNullOrEmpty(obj.TranslationContent))
+                {
+                    translationarticle.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                }
+                else
+                {
+                    translationarticle.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    translationarticle.NavigateToString(obj.TranslationContent);
+                }
                 var message = new ValueSet();
                 message.Add("bookTextKey", obj.Title);
                 BackgroundMediaPlayer.SendMessageToBackground(message);

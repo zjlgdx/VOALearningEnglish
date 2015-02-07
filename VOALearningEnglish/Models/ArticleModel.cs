@@ -26,6 +26,16 @@ namespace VOALearningEnglish.Models
             }
         }
 
+        private string translationcontent;
+        public string TranslationContent
+        {
+            get { return translationcontent; }
+            set
+            {
+                this.SetProperty(ref this.translationcontent, value);
+            }
+        }
+
         //mp3url
 
         private string mp3url;

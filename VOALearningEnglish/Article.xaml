@@ -17,21 +17,29 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <Pivot x:Uid="Pivot" Title="{Binding Article.Title }" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
+                <!--Pivot item one-->
+                <PivotItem
+                x:Uid="PivotItem1"
+                    x:Name="PivotItem1"
+                Margin="19,14.5,0,0"
+                Header="article"
+                CommonNavigationTransitionInfo.IsStaggerElement="True">
+                    <!--Double line list with text wrapping-->
+                    <WebView x:Name="article" DefaultBackgroundColor="#CCE8CF"/>
+                </PivotItem>
 
-        <!-- Title Panel -->
-        <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="VOA Learning English" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="{Binding Article.Title }" Margin="0,5,0,16.5" Style="{ThemeResource SubheaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
-        </StackPanel>
-
-        <!--TODO: Content should be placed within the following grid-->
-        <Grid Grid.Row="1" x:Name="ContentRoot">
-            <WebView x:Name="article" DefaultBackgroundColor="#CCE8CF"/>
-        </Grid>
+                <!--Pivot item two-->
+                <PivotItem
+                x:Uid="PivotItem2"
+                    x:Name="PivotItem2"
+                Margin="19,14.5,0,0"
+                Header="translation">
+                    <!--Double line list no text wrapping-->
+                    <WebView x:Name="translationarticle" DefaultBackgroundColor="#CCE8CF"/>
+                </PivotItem>
+            </Pivot>
+     
     </Grid>
 
     <Page.BottomAppBar>

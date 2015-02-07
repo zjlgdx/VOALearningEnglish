@@ -59,15 +59,19 @@ namespace VOALearningEnglish.Data
                     obj.Audio = Helper.GetMp3(contents["mp3"]);
                     obj.Mp3url = obj.Audio;
 
-                    if (!string.IsNullOrEmpty(contents["EnPage"]))
+                    if (contents.ContainsKey("EnPage"))
                     {
                         var shuangyuUrl = Helper.GetEnPage(contents["EnPage"]);
-                        obj.Content = await GetEnPageContent(shuangyuUrl);
+                        if (!shuangyuUrl.StartsWith("http:"))
+                        {
+                            shuangyuUrl = url.Substring(0, url.LastIndexOf("/")) +"/"+ shuangyuUrl;
+                        }
+                        obj.TranslationContent = await GetEnPageContent(shuangyuUrl);
                     }
-                    else
-                    {
+                    
+                   
                         obj.Content = contents["content"];
-                    }
+                   
                    
  
                     
