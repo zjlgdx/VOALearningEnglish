@@ -20,17 +20,14 @@ namespace VOALearningEnglish
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private NavigationHelper navigationHelper;
-        //The Windows.Web.Http.HttpClient class provides the main class for 
-        // sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
-        private HttpClient httpClient;
-        private HttpResponseMessage response;
+        private readonly NavigationHelper navigationHelper;
+       
         private const string VOA = "http://www.51voa.com/voa.xml";
         private const string SP = "http://www.51voa.com/sp.xml";
         private const string ST = "http://www.51voa.com/st.xml";
         private const string EN = "http://www.51voa.com/en.xml";
         // This is the feed address that will be parsed and displayed
-        private String feedAddress = EN;//"http://www.51voa.com/sp.xml";
+        private String feedAddress;
         //http://www.51voa.com/st.xml
 
         public MainPage()
@@ -42,17 +39,14 @@ namespace VOALearningEnglish
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+        }
 
-            httpClient = new HttpClient();
-
-            // Add a user-agent header
-            var headers = httpClient.DefaultRequestHeaders;
-
-            // HttpProductInfoHeaderValueCollection is a collection of 
-            // HttpProductInfoHeaderValue items used for the user-agent header
-
-            headers.UserAgent.ParseAdd("ie");
-            headers.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
+        /// <summary>
+        /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
+        /// </summary>
+        public NavigationHelper NavigationHelper
+        {
+            get { return this.navigationHelper; }
         }
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
@@ -76,24 +70,31 @@ namespace VOALearningEnglish
             }
         }
 
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.
-        /// This parameter is typically used to configure the page.</param>
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            // TODO: Prepare page for display here.
+        #region NavigationHelper registration
 
-            // TODO: If your application contains multiple pages, ensure that you are
-            // handling the hardware Back button by registering for the
-            // Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
-            // If you are using the NavigationHelper provided by some templates,
-            // this event is handled for you.
-           
-            
-            
+        /// <summary>
+        /// The methods provided in this section are simply used to allow
+        /// NavigationHelper to respond to the page's navigation methods.
+        /// <para>
+        /// Page specific logic should be placed in event handlers for the
+        /// <see cref="NavigationHelper.LoadState"/>
+        /// and <see cref="NavigationHelper.SaveState"/>.
+        /// The navigation parameter is available in the LoadState method
+        /// in addition to page state preserved during an earlier session.
+        /// </para>
+        /// </summary>
+        /// <param name="e">Event data that describes how this page was reached.</param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            this.navigationHelper.OnNavigatedTo(e);
         }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            this.navigationHelper.OnNavigatedFrom(e);
+        }
+
+        #endregion
 
         private async void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
@@ -121,11 +122,8 @@ namespace VOALearningEnglish
             var fileName = feedAddress.Split('/').Last().Replace(".xml", ".json");
             if (sync)
             {
-                response = new HttpResponseMessage();
-
-                // if 'feedAddress' value changed the new URI must be tested --------------------------------
-                // if the new 'feedAddress' doesn't work, 'feedStatus' informs the user about the incorrect input.
-
+                ///-----------------
+                ///
                 feedStatus.Text = "Test if URI is valid";
 
                 Uri resourceUri;
@@ -139,20 +137,22 @@ namespace VOALearningEnglish
                     feedStatus.Text = "Only 'http' and 'https' schemes supported. Please re-enter URI";
                     return;
                 }
-                // ---------- end of test---------------------------------------------------------------------
 
                 string responseText;
                 feedStatus.Text = "Waiting for response ...";
 
+                //Uri dataUri = new Uri(url);
+
                 try
                 {
-                    response = await httpClient.GetAsync(resourceUri);
-
-                    response.EnsureSuccessStatusCode();
-
-                    responseText = await response.Content.ReadAsStringAsync();
-                    statusPanel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-
+                    using (HttpClient client = new HttpClient())
+                    using (var response = await client.GetAsync(resourceUri))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        responseText = await response.Content.ReadAsStringAsync();
+                        feedStatus.Text = response.StatusCode + " " + response.ReasonPhrase;
+                        statusPanel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -160,11 +160,8 @@ namespace VOALearningEnglish
                     feedStatus.Text = "Error = " + ex.HResult.ToString("X") +
                         "  Message: " + ex.Message;
                     responseText = "";
+                    return;
                 }
-                feedStatus.Text = response.StatusCode + " " + response.ReasonPhrase;
-
-                // now 'responseText' contains the feed as a verified text.
-                // next 'responseText' is converted as the rssItems class model definition to be displayed as a list
 
 
                 XElement _xml = XElement.Parse(responseText);
@@ -266,7 +263,7 @@ namespace VOALearningEnglish
             else
             {
                 settings.Values.Add(key, value);
-               // valueChanged = true;
+                // valueChanged = true;
             }
         }
 
@@ -278,8 +275,36 @@ namespace VOALearningEnglish
             {
                 feedAddress = settings.Values[key].ToString();
             }
+            else
+            {
+                feedAddress = SP;
+                // pagetitleName.Text = sp.Label;
+            }
 
-           
+            var channel = feedAddress.Substring(feedAddress.LastIndexOf("/") + 1);
+            switch (channel)
+            {
+                case "voa.xml":
+                    pagetitleName.Text = voa.Label;
+                    break;
+                case "sp.xml":
+                    pagetitleName.Text = sp.Label;
+                    break;
+                case "st.xml":
+                    pagetitleName.Text = st.Label;
+                    break;
+                case "en.xml":
+                    pagetitleName.Text = en.Label;
+                    break;
+
+                default:
+                    pagetitleName.Text = sp.Label;
+                    break;
+            }
+
+
+
+
         }
 
     }

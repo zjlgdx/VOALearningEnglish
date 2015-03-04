@@ -28,9 +28,6 @@ namespace VOALearningEnglish
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        //private HttpClient httpClient;
-        //private HttpResponseMessage response;
-
         private string articleFileName;
         // private string mp3downloadUriString;
 
@@ -42,16 +39,7 @@ namespace VOALearningEnglish
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-            //    httpClient = new HttpClient();
-
-            // Add a user-agent header
-            // var headers = httpClient.DefaultRequestHeaders;
-
-            // HttpProductInfoHeaderValueCollection is a collection of 
-            // HttpProductInfoHeaderValue items used for the user-agent header
-
-            // headers.UserAgent.ParseAdd("ie");
-            // headers.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
+           
         }
 
         /// <summary>
@@ -105,13 +93,7 @@ namespace VOALearningEnglish
 
             try
             {
-                // response = await httpClient.GetAsync(resourceUri);
-
-                // response.EnsureSuccessStatusCode();
-
-                //responseText = await response.Content.ReadAsStringAsync();
-                //statusPanel.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                //var contents = GetContentById(html: responseText);
+                
                 var filename = link.Split('/').Last();
                 filename = Regex.Replace(filename, "\\.html$", ".json");
                 articleFileName = filename;
@@ -143,9 +125,7 @@ namespace VOALearningEnglish
                     "  Message: " + ex.Message;
                 // responseText = "";
             }
-            //statusBar.ProgressIndicator.Text = response.StatusCode + " " + response.ReasonPhrase;
-
-
+            
         }
 
 
