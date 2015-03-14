@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using VOALearningEnglish.Common;
 using VOALearningEnglish.Models;
@@ -52,7 +53,6 @@ namespace VOALearningEnglish.Data
                 {
                     response.EnsureSuccessStatusCode();
                     var responseText = await response.Content.ReadAsStringAsync();
-
                     var contents = Helper.GetContentById(html: responseText);
                     ArticleModel obj = new ArticleModel();
                     obj.Title = Helper.GetTitle(contents["title"]);
@@ -64,17 +64,16 @@ namespace VOALearningEnglish.Data
                         var shuangyuUrl = Helper.GetEnPage(contents["EnPage"]);
                         if (!shuangyuUrl.StartsWith("http:"))
                         {
-                            shuangyuUrl = url.Substring(0, url.LastIndexOf("/")) +"/"+ shuangyuUrl;
+                            shuangyuUrl = url.Substring(0, url.LastIndexOf("/")) + "/" + shuangyuUrl;
                         }
                         obj.TranslationContent = await GetEnPageContent(shuangyuUrl);
                     }
-                    
-                   
-                        obj.Content = contents["content"];
-                   
-                   
- 
-                    
+
+                    obj.Content = contents["content"];
+
+                    SaveImage(obj.Content);
+
+
                     obj.DownloadIconLable = "Download";
                     //  obj.DownloadIcon = Helper.SetIcon("Download");
                     //  await StorageDataHelper.writeTextToSDCard(RootFolder, JsonLocalFileName, json);
@@ -86,12 +85,34 @@ namespace VOALearningEnglish.Data
 
             //article.Audio = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync(article.Audio);
             _bookDataSource = article;
+        }
 
 
+        /// <summary>
+        /// javascript regex pattern
+        /// var reg = /<img\b(?=(?:(?!name=).)*name=(['"]?)([^'"\s>]+)\1)(?:(?!src=).)*src=(['"]?)([^'"\s>]+)\3[^>]*>/i;  
+        /// </summary>
+        /// <param name="html"></param>
+        private void SaveImage(string html)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return;
+            }
+            var pattern = @"<(img)(?:(?!\bsrc\b)[^<>])*src=([""']?)(?<src>[^\s]+)\2[^>]*>";
+            Match match = Regex.Match(html, pattern,
+                   RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+            if (match.Success)
+            {
+                var src = match.Result("${src}");
+                // todo: saving image 
+            }
 
         }
 
-        private async Task<string> GetEnPageContent(string url) {
+        private async Task<string> GetEnPageContent(string url)
+        {
             Uri dataUri = new Uri(url);
             HttpClient client = new HttpClient();
 
@@ -101,10 +122,10 @@ namespace VOALearningEnglish.Data
                 var responseText = await response.Content.ReadAsStringAsync();
 
                 var contents = Helper.GetContentById(html: responseText);
-             
+
                 return contents["content"];
-               
-       
+
+
             }
         }
     }
